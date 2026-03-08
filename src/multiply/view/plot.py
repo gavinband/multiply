@@ -9,7 +9,7 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
-
+import pandas
 
 class SequencePlotter:
     def __init__(self, seq):
