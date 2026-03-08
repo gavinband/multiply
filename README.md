@@ -68,6 +68,13 @@ multiply pipeline -d designs/<your-design-file.ini>
 
 For multiplexes of moderate size (e.g. <20 targets), running the pipeline will typically take a few minutes. A directory containing results will be produced in the `results` directory, within sub-folder whose name is specified in your design file (the `name` field).
 
+## Advanced usage
+
+It's also possible to use `multiply` to extend a previously-designed multiplex panel (for example, one that has already been tested).
+To use this functionality, specify the path to the previous `multiply` multiplex output in the `[Extend]` section of your design file.
+Multiple will search for primers in the regions you specify in `[Genes]` and/or `[Regions]` sections as usual at the `generate` step.
+However, it will then combine these primers with the previously-designed primers for all subsequent steps of the pipeline.
+
 #### Footnotes
 
 $1$ New organisms can be made available for download by adding them to the collection file located at `genomes/collection.ini`. Any organism available from [PlasmoDB](https://plasmodb.org/plasmo/app/downloads/), [EnsemblGenomes](https://ensemblgenomes.org/) or [RefSeq Genome](https://www.ncbi.nlm.nih.gov/genome/) can be added to the collection.
