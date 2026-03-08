@@ -223,10 +223,6 @@ def add_extend(config, params):
     else:
         target_names = target_ids
 
-    # Mapping between IDs and names
-    id_to_name = {i: n for i, n in zip(target_ids, target_names)}
-    name_to_id = {n: i for i, n in id_to_name.items()}
-
     # Sanity checks
     n_ids = len(target_ids)
     n_names = len(target_names)
@@ -256,18 +252,39 @@ def add_extend(config, params):
             'pair_penalty'
         ]
     ]
-    # Check all specified genes are represented in the file:
-    for id in target_ids:
-        if primer_df[ primer_df.target_id == id ].shape[0] == 0:
+    # Check all specified genes are represented in the file and have the correct names:
+    for index, id in enumerate( target_ids ):
+        this_target = primer_df[ primer_df.target_id == id ]
+        if this_target.shape[0] == 0:
             raise DesignFileError(
                 f"In [Extend], target id \"{id}\" was not among the targets in the specified design file \"{design_file}\"."
             )
+        target_name = list( set( this_target.target_name.to_list() ))
+        if len(target_name) > 1:
+            raise DesignFileError(
+                f"In [Extend], in the specified design file \"{design_file}\", target {target_id} seems to have more than one name."
+            )
+        target_name = target_name[0]
+        if has_names:
+            # If we're given names, make sure they are correct:
+            if target_name != target_names[index]:
+                raise DesignFileError(
+                    f"In [Extend], the name (\"{target_name}\") for target {id} in the design file \"{design_file}\", does not match the one specified (\"{target_names[index]}\")."
+                )
+        else:
+            # Otherwise get the name from the file:
+            target_names[index] = target_name
+
     primer_df = primer_df[ primer_df.target_id.isin( target_ids )]
+
+    # Mapping between IDs and names
+    id_to_name = {i: n for i, n in zip(target_ids, target_names)}
+    name_to_id = {n: i for i, n in id_to_name.items()}
 
     # Add to dictionary
     params["from_extend"]       = True
     params["extend_ids"]        = target_ids
-    params["extend_has_names"]  = has_names
+    params["extend_has_names"]  = True
     params["extend_names"]      = target_names
     params["extend_id_to_name"] = id_to_name
     params["extend_primers"]    = primer_df
